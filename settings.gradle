@@ -1,0 +1,5 @@
+rootProject.name = 'vimvie'
+include 'gateway'
+include 'config'
+include 'auth-service'
+include 'account-service'

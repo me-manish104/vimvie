@@ -1,0 +1,59 @@
+logging:
+  level:
+    org.springframework.security: INFO
+
+security:
+  oauth2:
+    resource:
+      user-info-uri: http://localhost:4000/uaa/users/current
+
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      minimumNumberOfCalls: 5
+      permittedNumberOfCallsInHalfOpenState: 3
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      waitDurationInOpenState: 2s
+      failureRateThreshold: 50
+      eventConsumerBufferSize: 10
+      recordExceptions:
+        - org.springframework.web.client.HttpServerErrorException
+        - java.io.IOException
+      ignoreExceptions:
+        - java.lang.IllegalStateException
+  instances:
+    default:
+      baseConfig: default
+
+
+spring:
+  output.ansi.enabled: ALWAYS
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        preferIpAddress: true
+        service-name: ${spring.application.name}
+        instance-id: ${spring.application.name}-${random.value}
+        healthCheckPath: ${server.servlet.context-path:}/actuator/health
+        healthCheckInterval: 5s
+  rabbitmq:
+    host: rabbitmq
+
+
